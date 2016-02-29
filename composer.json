@@ -27,5 +27,8 @@
       "Thapp\\Jmg\\Tests\\Http\\Foundation\\": "tests/"
     }
   },
+  "suggest": {
+    "symfony/http-kernel":"to utilize kernel http exceptions."
+  },
   "minimum-stability": "dev"
 }
