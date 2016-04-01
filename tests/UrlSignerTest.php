@@ -94,7 +94,6 @@ class UrlSignerTest extends \PHPUnit_Framework_TestCase
         $q = $this->mockQuery();
         $q->method('get')->with($key)->willReturn($query);
         $rq = $this->mockRequest(['getPathInfo']);
-        $rq->method('getQuery')->willReturn($q);
 
         $rq->method('getPathInfo')->willReturn($path);
         $rq->query = $q;
@@ -123,10 +122,10 @@ class UrlSignerTest extends \PHPUnit_Framework_TestCase
      */
     protected function mockParameters($str = '0')
     {
-        $mock = $this->getMockBuilder('Thapp\Jmg\Parameters')
+        $mock = $this->getMockBuilder('Thapp\Jmg\ParamGroup')
             ->disableOriginalConstructor()
             ->getMock();
-        $mock->method('asString')->willReturn($str);
+        $mock->method('__toString')->willReturn($str);
 
         return $mock;
     }

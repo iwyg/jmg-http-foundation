@@ -11,8 +11,7 @@
 
 namespace Thapp\Jmg\Http\Foundation;
 
-use Thapp\Jmg\Parameters;
-use Thapp\Jmg\FilterExpression;
+use Thapp\Jmg\ParamGroup;
 use Thapp\Jmg\Http\UrlSigner as BaseSigner;
 use Symfony\Component\HttpFoundation\Request;
 use Thapp\Jmg\Exception\InvalidSignatureException;
@@ -29,13 +28,13 @@ class UrlSigner extends BaseSigner implements UrlSignerInterface
     /**
      * {@inheritdoc}
      */
-    public function validateRequest(Request $request, Parameters $params, FilterExpression $filters = null)
+    public function validateRequest(Request $request, ParamGroup $params)
     {
         if (null === $token = $request->query->get($this->getQParamKey())) {
             throw InvalidSignatureException::missingSignature();
         }
 
-        if (0 !== strcmp($token, $this->createSignature($request->getPathInfo(), $params, $filters))) {
+        if (0 !== strcmp($token, $this->createSignature($request->getPathInfo(), $params))) {
             throw InvalidSignatureException::invalidSignature();
         }
 

@@ -11,7 +11,7 @@
 
 namespace Thapp\Jmg\Http\Foundation;
 
-use Thapp\Jmg\Parameters;
+use Thapp\Jmg\ParamGroup;
 use Thapp\Jmg\FilterExpression;
 use Thapp\Jmg\Resource\ResourceInterface;
 use Thapp\Jmg\Resolver\ResolverInterface;
@@ -112,16 +112,13 @@ trait ImageControllerTrait
      * @param string $alias
      * @param string $params
      * @param string $source
-     * @param string $filter
      *
      * @throws NotFoundHttpException if image was not found
      * @return Response
      */
-    public function getImage($path, $params = null, $source = null, $filters = null)
+    public function getImage($path, $params = null, $source = null)
     {
-        list ($parameters, $filterExpr) = $this->getParamsAndFilters($params, $filters);
-
-        return $this->resolveImage($path, $source, $parameters, $filterExpr);
+        return $this->resolveImage($path, $source, ParamGroup::fromString($params));
     }
 
     /**
@@ -140,9 +137,9 @@ trait ImageControllerTrait
             $this->notFound($source);
         }
 
-        list($path, $params, $filter) = $this->recipes->resolve($recipe);
+        list($path, $params) = $this->recipes->resolve($recipe);
 
-        return $this->resolveImage($path, $source, $params, $filter);
+        return $this->resolveImage($path, $source, $params);
     }
 
     /**
@@ -174,11 +171,11 @@ trait ImageControllerTrait
      * @throws NotFoundHttpException if image was not found
      * @return ImageResponse
      */
-    protected function resolveImage($path, $source, Parameters $params, FilterExpression $filter = null)
+    protected function resolveImage($path, $source, ParamGroup $params)
     {
-        $this->validateRequest($req = $this->getRequest(), $params, $filter);
+        $this->validateRequest($req = $this->getRequest(), $params);
 
-        if (!$resource = $this->imageResolver->resolve($source, $params, $filter, $path)) {
+        if (!$resource = $this->imageResolver->resolve($source, $params, $path)) {
             $this->notFound($source);
         }
 
@@ -189,38 +186,24 @@ trait ImageControllerTrait
      * Validates current Request
      *
      * @param Request $request
-     * @param Parameters $params
-     * @param FilterExpression $filters
+     * @param ParamGroup $params
      *
      * @throws BadRequestHttpException if validation fails
      * @return boolean
      */
-    private function validateRequest(Request $request, Parameters $params, FilterExpression $filters = null)
+    private function validateRequest(Request $request, ParamGroup $params)
     {
         if (null === $this->signer) {
             return true;
         }
 
         try {
-            return $this->signer->validateRequest($request, $params, $filters);
+            return $this->signer->validateRequest($request, $params);
         } catch (InvalidSignatureException $e) {
             throw new BadRequestHttpException($e->getMessage());
         }
 
         return true;
-    }
-
-    /**
-     * getParamsAndFilters
-     *
-     * @param string $params
-     * @param string $filters
-     *
-     * @return array
-     */
-    protected function getParamsAndFilters($params, $filters = null)
-    {
-        return [Parameters::fromString($params), $filters ? new FilterExpression($filters) : null];
     }
 
     /**

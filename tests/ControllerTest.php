@@ -31,7 +31,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
         $request->headers = $this->mockParameterBag();
         $images->expects($this->once())->method('resolve')->willReturnCallback(function ($src, $params) {
             $this->assertSame('myimage.jpg', $src);
-            $this->assertInstanceof('Thapp\Jmg\Parameters', $params);
+            $this->assertInstanceof('Thapp\Jmg\ParamGroup', $params);
 
             return $this->mockImageResource();
         });

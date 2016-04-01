@@ -11,8 +11,7 @@
 
 namespace Thapp\Jmg\Http\Foundation;
 
-use Thapp\Jmg\Parameters;
-use Thapp\Jmg\FilterExpression;
+use Thapp\Jmg\ParamGroup;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -28,10 +27,9 @@ interface UrlSignerInterface
      * validateRequest
      *
      * @param Request $request
-     * @param Parameters $params
-     * @param FilterExpression $filters
+     * @param ParamGroup $params
      *
      * @return bool
      */
-    public function validateRequest(Request $request, Parameters $params, FilterExpression $filters = null);
+    public function validateRequest(Request $request, ParamGroup $params);
 }
